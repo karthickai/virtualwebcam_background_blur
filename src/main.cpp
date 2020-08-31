@@ -7,15 +7,14 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <gst/pbutils/pbutils.h>
+#include <tensorflow/core/platform/env.h>
+#include <tensorflow/core/public/session.h>
 
 int main() {
 
     std::cout << "OpenCV Version " << CV_VERSION << std::endl;
     std::cout << "gStreamer Version " << GST_VERSION_MAJOR << "." << GST_VERSION_MINOR << "." << GST_VERSION_MICRO
               << std::endl;
-<<<<<<< b065d62fb7e979222ec41930dcbd99d426d01dc0
-    std::cout << "Hello World" << std::endl;
-=======
     tensorflow::DeviceTypeString("GPU");
     tensorflow::Session *session;
     tensorflow::Status status = tensorflow::NewSession(tensorflow::SessionOptions(), &session);
@@ -59,6 +58,5 @@ int main() {
         }
         cv::imshow(windowName, frame);
     }
->>>>>>> Added OpenCV Cap
     return 0;
 }

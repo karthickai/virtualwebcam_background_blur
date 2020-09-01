@@ -24,12 +24,17 @@ link_directories(
 
 #using pk-config to getting TensorFlow packages
 find_package(TensorflowCC REQUIRED)
-
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${GSTREAMER_LIBRARIES} TensorflowCC::TensorflowCC)
 
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${GSTREAMER_LIBRARIES} TensorflowCC::TensorflowCC)
+find_package(PROTOBUF)
+if(PROTOBUF_FOUND)
+    message("protobuf found")
+    target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+endif()
 # You may also link cuda if it is available.
- find_package(CUDA)
- if(CUDA_FOUND)
-   target_link_libraries(${PROJECT_NAME} ${CUDA_LIBRARIES})
- endif()
+find_package(CUDA)
+if(CUDA_FOUND)
+    message("cuda found")
+    target_link_libraries(${PROJECT_NAME} ${CUDA_LIBRARIES} ${PROTOBUF_LIBRARIES})
+endif()

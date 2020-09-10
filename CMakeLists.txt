@@ -24,7 +24,7 @@ link_directories(
 
 #using pk-config to getting TensorFlow packages
 find_library(TENSORFLOW_LIB tensorflow)
-add_executable(${PROJECT_NAME} src/main.cpp src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/Model.cpp src/Tensor.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${GSTREAMER_LIBRARIES} ${TENSORFLOW_LIB})

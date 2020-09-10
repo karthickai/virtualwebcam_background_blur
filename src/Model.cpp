@@ -1,8 +1,8 @@
 //
-// Created by sergio on 12/05/19.
+// Created by karthick on 31/08/20.
 //
 
-#include "../include/Model.h"
+#include "Model.h"
 
 Model::Model(const std::string& model_filename, const std::vector<uint8_t>& config_options) {
     this->status = TF_NewStatus();
@@ -57,78 +57,7 @@ void Model::init() {
     this->status_check(true);
 }
 
-void Model::save(const std::string &ckpt) {
-    // Encode file_name to tensor
-    size_t size = 8 + TF_StringEncodedSize(ckpt.length());
-    TF_Tensor* t = TF_AllocateTensor(TF_STRING, nullptr, 0, size);
-    char* data = static_cast<char *>(TF_TensorData(t));
-    for (int i=0; i<8; i++) {data[i]=0;}
-    TF_StringEncode(ckpt.c_str(), ckpt.size(), data + 8, size - 8, status);
 
-    memset(data, 0, 8);  // 8-byte offset of first string.
-    TF_StringEncode(ckpt.c_str(), ckpt.length(), (char*)(data + 8), size - 8, status);
-
-    // Check errors
-    if (!this->status_check(false)) {
-        TF_DeleteTensor(t);
-        std::cerr << "Error during filename " << ckpt << " encoding" << std::endl;
-        this->status_check(true);
-    }
-
-    TF_Output output_file;
-    output_file.oper = TF_GraphOperationByName(this->graph, "save/Const");
-    output_file.index = 0;
-    TF_Output inputs[1] = {output_file};
-
-    TF_Tensor* input_values[1] = {t};
-    const TF_Operation* restore_op[1] = {TF_GraphOperationByName(this->graph, "save/control_dependency")};
-    if (!restore_op[0]) {
-        TF_DeleteTensor(t);
-        this->error_check(false, "Error: No operation named \"save/control_dependencyl\" exists");
-    }
-
-
-    TF_SessionRun(this->session, nullptr, inputs, input_values, 1, nullptr, nullptr, 0, restore_op, 1, nullptr, this->status);
-    TF_DeleteTensor(t);
-
-    this->status_check(true);
-}
-
-void Model::restore(const std::string& ckpt) {
-
-    // Encode file_name to tensor
-    size_t size = 8 + TF_StringEncodedSize(ckpt.size());
-    TF_Tensor* t = TF_AllocateTensor(TF_STRING, nullptr, 0, size);
-    char* data = static_cast<char *>(TF_TensorData(t));
-    for (int i=0; i<8; i++) {data[i]=0;}
-    TF_StringEncode(ckpt.c_str(), ckpt.size(), data + 8, size - 8, status);
-
-    // Check errors
-    if (!this->status_check(false)) {
-        TF_DeleteTensor(t);
-        std::cerr << "Error during filename " << ckpt << " encoding" << std::endl;
-        this->status_check(true);
-    }
-
-    TF_Output output_file;
-    output_file.oper = TF_GraphOperationByName(this->graph, "save/Const");
-    output_file.index = 0;
-    TF_Output inputs[1] = {output_file};
-
-    TF_Tensor* input_values[1] = {t};
-    const TF_Operation* restore_op[1] = {TF_GraphOperationByName(this->graph, "save/restore_all")};
-    if (!restore_op[0]) {
-        TF_DeleteTensor(t);
-        this->error_check(false, "Error: No operation named \"save/restore_all\" exists");
-    }
-
-
-
-    TF_SessionRun(this->session, nullptr, inputs, input_values, 1, nullptr, nullptr, 0, restore_op, 1, nullptr, this->status);
-    TF_DeleteTensor(t);
-
-    this->status_check(true);
-}
 
 TF_Buffer *Model::read(const std::string& filename) {
     std::ifstream file (filename, std::ios::binary | std::ios::ate);

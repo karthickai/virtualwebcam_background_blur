@@ -13,6 +13,7 @@
 #include <cstring>
 #include <tensorflow/c/c_api.h>
 #include "Model.h"
+#include <opencv2/opencv.hpp>
 
 class Model;
 
@@ -41,6 +42,9 @@ public:
     std::vector<T> get_data();
 
 	std::vector<int64_t> get_shape();
+
+    cv::Mat convert_tensor_to_mat();
+
 
 private:
     TF_Tensor* val;

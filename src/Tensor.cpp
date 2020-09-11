@@ -3,7 +3,7 @@
 //
 
 #include "Tensor.h"
-
+#include <iostream>
 #include <utility>
 
 Tensor::Tensor(const Model& model, const std::string& operation) {
@@ -79,6 +79,7 @@ void Tensor::set_data(std::vector<T> new_data) {
     this->error_check(this->flag != -1, "Tensor is not valid");
 
     // Check type
+    std::cout << this->type << std::endl;
     this->error_check(deduce_type<T>() == this->type, "Provided type is different from Tensor expected type");
 
     // Dimensions must be known
@@ -159,8 +160,10 @@ TF_DataType Tensor::deduce_type() {
         return TF_DOUBLE;
     if (std::is_same<T, int32_t >::value)
         return TF_INT32;
-    if (std::is_same<T, uint8_t>::value)
+    if (std::is_same<T, uint8_t>::value){
+        std::cout << "Data Type TF_UINT8" << std::endl;
         return TF_UINT8;
+    }
     if (std::is_same<T, int16_t>::value)
         return TF_INT16;
     if (std::is_same<T, int8_t>::value)
@@ -191,6 +194,18 @@ void Tensor::deduce_shape() {
             this->shape[i] = TF_Dim(this->val, i);
         }
     }
+}
+
+cv::Mat Tensor::convert_tensor_to_mat() {
+
+    auto raw_data = TF_TensorData(this->val);
+    this->error_check(raw_data != nullptr, "Tensor data is empty");
+
+    auto h = this->shape[1];
+    auto w = this->shape[2];
+    auto c = this->shape[3];
+
+    return cv::Mat(h,w,CV_32FC(c),raw_data);
 }
 
 

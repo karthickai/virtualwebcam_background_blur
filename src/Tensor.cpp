@@ -79,7 +79,6 @@ void Tensor::set_data(std::vector<T> new_data) {
     this->error_check(this->flag != -1, "Tensor is not valid");
 
     // Check type
-    std::cout << this->type << std::endl;
     this->error_check(deduce_type<T>() == this->type, "Provided type is different from Tensor expected type");
 
     // Dimensions must be known
@@ -161,7 +160,6 @@ TF_DataType Tensor::deduce_type() {
     if (std::is_same<T, int32_t >::value)
         return TF_INT32;
     if (std::is_same<T, uint8_t>::value){
-        std::cout << "Data Type TF_UINT8" << std::endl;
         return TF_UINT8;
     }
     if (std::is_same<T, int16_t>::value)
